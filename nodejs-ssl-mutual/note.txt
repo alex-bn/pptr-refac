@@ -1,0 +1,51 @@
+# 1 - add to C:\Windows\System32\drivers\etc\hosts:
+127.0.0.1 client.bbb.com
+127.0.0.1 server.aaa.com
+
+# 2 - create a certification authority (CA) certificate for the server with 1 year validity and the related key:  
+
+> openssl req -new -x509 -days 365 -keyout server-ca-key.pem -out server-ca-crt.pem
+
+the most important question is the Common Name which should be the server main domain (aaa.com)
+
+# 3 - generate the actual server certificate which will be used in the ssl handshake, generate a random key (4096 bit length)
+
+> openssl genrsa -out server-key.pem 4096
+
+# - then generate a Certificate Signing Request (CSR) with the key we have generated:
+
+> openssl req -new -sha256 -key server-key.pem -out server-csr.pem
+
+# - pay attention to the Common Name which must have the same name of the host will serve the application (server.aaa.com)
+
+# 4 - final step, generate the server certificate (validity 1 year) from the CSR previously created and sign it with the CA key
+
+> openssl x509 -req -days 365 -in server-csr.pem -CA server-ca-crt.pem -CAkey server-ca-key.pem -CAcreateserial -out server-crt.pem
+
+# 5 - to verify the certificate signature against the CA you can issue the following command:
+
+> openssl verify -CAfile server-ca-crt.pem server-crt.pem
+
+# 5 - now it’s time to do the same steps for the Client. First of all create a Certification Authority (CA) certificate for the client with 1 year validity and the related key
+
+> openssl req -new -x509 -days 365 -keyout client-ca-key.pem -out client-ca-crt.pem
+
+# the most important question is the Common Name which should be the client main domain (bbb.com)
+
+# 6 - generate the actual client certificate which will be used in the ssl handshake. First of all we have to generate a random key (4096 bit length in our example):
+
+> openssl genrsa -out client-key.pem 4096
+
+# 7 - then generate a Certificate Signing Request (CSR) with the key we have generated:
+
+> openssl req -new -sha256 -key client-key.pem -out client-csr.pem
+
+# - Pay attention to the Common Name which must have the same name of the host will serve the application (client.bbb.com).
+
+# 8 - generate the client certificate (validity 1 year) from the CSR previously created and sign it with the CA key:
+
+> openssl x509 -req -days 365 -in client-csr.pem -CA client-ca-crt.pem -CAkey client-ca-key.pem -CAcreateserial -out client-crt.pem
+
+# 9 - to verify the certificate signature against the CA you can issue the following command:
+
+> openssl verify -CAfile client-ca-crt.pem client-crt.pem
