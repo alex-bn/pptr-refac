@@ -1,7 +1,9 @@
 import puppeteer from 'puppeteer';
-import helper from '../helpers/functions';
+import helper from '../utility-func/utility-functions';
 
 (async () => {
+  const url = 'https://news.google.com';
+  const agreeSelector = 'div.AIC7ge > form > div > div > button';
   let start: Date = new Date();
   console.log('--\xa0process:\xa0start');
 
@@ -11,10 +13,9 @@ import helper from '../helpers/functions';
   const page = await browser.newPage();
 
   await helper.interceptReq(page);
+  await helper.loadPage(page, url);
 
-  await page.goto('https://news.google.com', { waitUntil: 'load' });
-
-  const agree = await page.$('div.AIC7ge > form > div > div > button');
+  const agree = await page.$(agreeSelector);
   await agree?.click();
   await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
   console.log('--\xa0process:\xa0accept\xa0terms\xa0of\xa0service');
