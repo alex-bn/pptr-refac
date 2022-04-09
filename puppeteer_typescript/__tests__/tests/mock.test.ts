@@ -1,4 +1,5 @@
-import helper from '../helpers/functions';
+import { url } from 'inspector';
+import helper from '../utility-func/utility-functions';
 
 describe('test', () => {
   it.skip('should load google homepage', async () => {
@@ -23,13 +24,14 @@ describe('test', () => {
   });
 
   it('should upload a file and receive confirmation', async () => {
-    await page.goto('https://the-internet.herokuapp.com/upload', {
-      waitUntil: 'domcontentloaded',
-    });
+    const url = 'https://the-internet.herokuapp.com/upload';
+
+    await helper.loadPage(page, url);
     await helper.loadFile(page, '#file-upload', `${__dirname}/files/pdf.pdf`);
-    await page.click('#file-submit');
-    await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-    await helper.timeout(1250);
+    await helper.clickAndLoad(page, '#file-submit');
+
+    await helper.shouldExist(page, 'h3');
+
     await helper.waitForText(page, 'body', 'File Uploaded!').then(text => {
       expect(text).toBe('File Uploaded!');
     });
