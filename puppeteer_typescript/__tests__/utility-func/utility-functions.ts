@@ -5,7 +5,7 @@ import path from 'path';
 export default class Helper {
   // #
   static timeout = async (ms: number) => {
-    return new Promise(res => setTimeout(res, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   };
 
   // #
@@ -70,7 +70,6 @@ export default class Helper {
     file: string
   ) => {
     try {
-      // await page.waitForSelector(selector);
       const [fileChooser] = await Promise.all([
         page.waitForFileChooser(),
         page.click(button),
@@ -86,7 +85,7 @@ export default class Helper {
     }
   };
 
-  // # my baby
+  // #
   static loadMultipleFiles = async (
     page: puppeteer.Page,
     button: string,
@@ -121,7 +120,7 @@ export default class Helper {
     }
   };
 
-  // #
+  // # a
   static loadPage = async (page: puppeteer.Page, url: string) => {
     try {
       await Promise.all([
@@ -133,7 +132,7 @@ export default class Helper {
     }
   };
 
-  // # which one is better
+  // # b
   static loadUrl = async (page: puppeteer.Page, url: string) => {
     try {
       const promises = [];
@@ -181,7 +180,7 @@ export default class Helper {
     throw error;
   };
 
-  // # do i need this ?
+  // # is this necessary ?
   static click = async (page: puppeteer.Page, selector: string) => {
     try {
       await Promise.all([page.waitForSelector(selector), page.click(selector)]);
@@ -212,7 +211,7 @@ export default class Helper {
     }
   };
 
-  // # do i need this ?
+  // # is this necessary ?
   static doubleClick = async (page: puppeteer.Page, selector: string) => {
     try {
       const input = await page.$(selector);
@@ -299,11 +298,11 @@ export default class Helper {
     }
   };
 
-  // #
   static getText = async (page: puppeteer.Page, selector: string) => {
     try {
-      await page.waitForSelector(selector);
-      await page.$eval(selector, e => e.innerHTML);
+      return await page.$eval(selector, uiElement => {
+        return (<HTMLElement>uiElement).innerText;
+      });
     } catch (error) {
       console.log(
         `Could not get text from selector: "${selector}", keep calm and carry on.`,
@@ -315,22 +314,30 @@ export default class Helper {
   // #
   static getCount = async (page: puppeteer.Page, selector: string) => {
     try {
-      await page.waitForSelector(selector);
-      await page.$$eval(selector, items => items.length);
+      return await page.$$eval(selector, items => items.length);
     } catch (error) {
       console.log(
-        `Could not count selectors of type "${selector}", keep calm and carry on.\n`,
+        `Could not count selectors of type "${selector}", keep calm and carry on.`,
         error
       );
     }
   };
 
-  // #
+  // # wip
   static shouldExist = async (page: puppeteer.Page, selector: string) => {
     try {
-      const element = await page.waitForSelector(selector, {
-        visible: true,
-        timeout: 2500,
+      // true if element is visible
+      return await page.$eval(selector, uiElement => {
+        if (uiElement) {
+          const style = getComputedStyle(uiElement);
+          const rect = uiElement.getBoundingClientRect();
+          console.log(uiElement);
+
+          return (
+            style.visibility !== 'hidden' &&
+            !!(rect.bottom || rect.top || rect.height || rect.width)
+          );
+        }
       });
     } catch (error) {
       console.log(
@@ -340,20 +347,31 @@ export default class Helper {
     }
   };
 
-  // # ?????
-  // static shouldNotExist = async (page: puppeteer.Page, selector: string) => {
-  //   try {
-  //     await page.waitForTimeout(+(() => !document.querySelector(selector)));
-  //   } catch (error) {
-  //     console.log(
-  //       `Selector, "${selector}", is visible and should not be. Keep calm and carry on.`,
-  //       error
-  //     );
-  //   }
-  // };
+  // # needs error handling
+  static shouldNotExist = async (page: puppeteer.Page, selector: string) => {
+    try {
+      if (
+        (await page.waitForSelector(selector, {
+          visible: true,
+          hidden: true,
+          timeout: 3000,
+        })) === null
+      ) {
+        return true;
+      } else {
+        // return false ?
+        throw console.log('Element is visible ');
+      }
+    } catch (error) {
+      console.log(
+        `Selector, "${selector}", is visible and should not be. Keep calm and carry on.`,
+        error
+      );
+    }
+  };
 }
 
-//   // #17 disabled button WIP
+//   // #disabled button WIP
 //   isDisabled: async function (page, selector) {
 //     try {
 //     } catch (error) {

@@ -1,10 +1,10 @@
-'use strict';
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
+import Helper from '../utility-func/utility-functions';
 
 // Puppeteer #25
 
-async function run() {
-  let browser = await puppeteer.launch({ headless: false });
+(async () => {
+  let browser = await puppeteer.launch({ headless: true });
   let page = await browser.newPage();
   let currentUrl;
 
@@ -15,7 +15,8 @@ async function run() {
     if (
       req.resourceType() == 'stylesheet' ||
       req.resourceType() == 'font' ||
-      req.resourceType() == 'image'
+      req.resourceType() == 'image' ||
+      req.resourceType() == 'media'
     ) {
       req.abort();
     } else {
@@ -26,12 +27,12 @@ async function run() {
   for (currentUrl of [
     'https://www.ebay.com/',
     'https://bbc.com',
-    'https://news.google.com/news/',
+    'https://cnn.com',
   ]) {
+    console.time('test took');
     await page.goto(currentUrl);
-    await page.waitForTimeout(3000);
+    await page.screenshot({ path: `./screenshots/${Date.now()}-block.png` });
+    console.timeEnd('test took');
   }
   await browser.close();
-}
-
-run();
+})();

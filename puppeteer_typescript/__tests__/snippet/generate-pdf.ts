@@ -1,20 +1,17 @@
-'use strict';
-const puppeteer = require('puppeteer');
-
-// Puppeteer #35
+import puppeteer from 'puppeteer';
+import Helper from '../utility-func/utility-functions';
 
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
   await page.goto('https://pptr.dev/');
-  await page.waitForSelector('[type="search"]');
-
+  await Helper.waitTillHTMLRendered(page);
   await page.pdf({
-    path: './output.pdf',
+    path: `../snippet/files/${Date.now()}-page-pdf.pdf`,
     printBackground: true,
     scale: 0.5,
-    format: 'a6',
+    format: 'letter',
     margin: { top: '50px', bottom: '50px' },
     landscape: true,
     displayHeaderFooter: true,
@@ -22,6 +19,5 @@ const puppeteer = require('puppeteer');
     footerTemplate: `<div style="font-size: 6rem">This is our custom footer! The title is: <span class="title" /></div>"`,
   });
 
-  await page.waitForTimeout(1000);
   await browser.close();
 })();

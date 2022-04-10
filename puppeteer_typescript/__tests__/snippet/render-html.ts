@@ -1,5 +1,7 @@
 import puppeteer from 'puppeteer';
 import Helper from '../utility-func/utility-functions';
+import * as chai from 'chai';
+const expect = chai.expect;
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -25,5 +27,5 @@ import Helper from '../utility-func/utility-functions';
     await Helper.waitTillHTMLRendered(page);
   }
 
-  await await browser.close();
+  await browser.close();
 })();
