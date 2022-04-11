@@ -347,7 +347,7 @@ export default class Helper {
     }
   };
 
-  // # needs error handling
+  // # wip + error handling
   static shouldNotExist = async (page: puppeteer.Page, selector: string) => {
     try {
       if (
@@ -370,29 +370,3 @@ export default class Helper {
     }
   };
 }
-
-//   // #disabled button WIP
-//   isDisabled: async function (page, selector) {
-//     try {
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   },
-//   // Using page.$()
-//   // const is_disabled = await page.$('button[disabled]') !== null;
-
-//   // // Using page.$$()
-//   // const is_disabled = (await page.$$('button[disabled]')).length !== 0;
-
-//   // // Using page.$eval()
-//   // const is_disabled = await page.$eval('button[disabled]', button => button !== null).catch(error => error.toString() !== 'Error: Error: failed to find element matching selector "button[disabled]"');
-
-//   // // Using page.$$eval()
-//   // const is_disabled = await page.$$eval('button[disabled]', buttons => buttons.length !== 0);
-
-//   // // Using page.$x()
-//   // const is_disabled = (await page.$x('//button[@disabled]')).length !== 0;
-
-//   // // Using page.evaluate()
-//   // const is_disabled = await page.evaluate(() => document.querySelector('button[disabled]') !== null);
-// };

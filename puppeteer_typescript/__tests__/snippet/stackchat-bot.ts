@@ -1,10 +1,9 @@
-'use strict';
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 // Puppeteer #42
 // https://stackchat.com/blog/puppeteer-cluster-performance-testing
 
-https: (async () => {
+(async () => {
   const browser = await puppeteer.launch({ headless: false, slowMo: 50 }); // slowMo required !!!
   const page = await browser.newPage();
 
@@ -16,7 +15,7 @@ https: (async () => {
   const waitTimeout = 5000;
 
   // Helper function 1
-  const waitForResponse = async (frame, response) => {
+  const waitForResponse = async (frame: any, response: any) => {
     console.log(`Waiting for ${response}`);
     await frame.waitForFunction(
       `document.querySelector('body').innerText.includes('${response}')`
@@ -25,7 +24,7 @@ https: (async () => {
   };
 
   // Helper function 2
-  const sendMessage = async (inputSelector, message) => {
+  const sendMessage = async (inputSelector: any, message: any) => {
     console.log(`Type message ${message}`);
     await inputSelector.type(message);
     await inputSelector.press('Enter');
@@ -33,16 +32,16 @@ https: (async () => {
   };
 
   // Helper function 3
-  const clickButton = async (frame, button) => {
+  const clickButton = async (frame: any, button: any) => {
     console.log(`Clicking button ${button}`);
-    const buttonSelector = await messengerFrame.waitForSelector(
+    const buttonSelector = await messengerFrame?.waitForSelector(
       `#conversation > div.messages-container > div > div.reply-container > button:nth-child(${button}) > span`
     );
-    await buttonSelector.click();
+    await buttonSelector?.click();
   };
 
   // Timeout helper
-  async function timeout(ms) {
+  async function timeout(ms: number) {
     console.log(`Pause for ${ms / 1000} seconds`);
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -57,8 +56,8 @@ https: (async () => {
 
   //
   const messengerFrameContainer = await page.$(messengerFrameSelector);
-  const messengerFrame = await messengerFrameContainer.contentFrame();
-  const messengerBubble = await messengerFrame.waitForSelector(
+  const messengerFrame = await messengerFrameContainer?.contentFrame();
+  const messengerBubble = await messengerFrame?.waitForSelector(
     messengerBubbleSelector,
     { timeout: waitTimeout }
   );
@@ -68,8 +67,8 @@ https: (async () => {
   console.log('Wait for messenger input');
   //
 
-  await messengerBubble.click();
-  let messageInput = await messengerFrame.waitForSelector(
+  await messengerBubble?.click();
+  let messageInput = await messengerFrame?.waitForSelector(
     messengerInputSelector,
     { timeout: waitTimeout }
   );
@@ -105,7 +104,7 @@ https: (async () => {
   await waitForResponse(messengerFrame, 'to do next');
   await timeout(2000);
   console.log('Taking screenshot and exiting');
-  await page.screenshot({ path: 'screenshot.png' });
+  await page.screenshot({ path: `./screenshots/${Date.now()}-stackchat.png` });
 
   // close
   await browser.close();
